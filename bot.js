@@ -52,6 +52,7 @@ This bot demonstrates many of the core features of Botkit:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 var env = require('node-env-file');
+var Kinvey = require('kinvey-node-sdk');
 env(__dirname + '/.env');
 
 
@@ -67,9 +68,14 @@ var bot_options = {
     clientId: process.env.clientId,
     clientSecret: process.env.clientSecret,
     // debug: true,
-    scopes: ['bot'],
+    scopes: ['bot', 'channels:history'],
     studio_token: process.env.studio_token,
     studio_command_uri: process.env.studio_command_uri
+};
+
+var kinvey_options = {
+    appKey: process.env.appKey,
+    appSecret: process.env.appSecret
 };
 
 // Use a mongo database if specified, otherwise store in a JSON file local to the app.
@@ -84,6 +90,10 @@ if (process.env.MONGO_URI) {
 // Create the Botkit controller, which controls all instances of the bot.
 var controller = Botkit.slackbot(bot_options);
 
+// Initialize Kinvey
+Kinvey.init(kinvey_options);
+// Login with the user added in Kinvey
+Kinvey.User.login("admin","admin");
 controller.startTicking();
 
 // Set up an Express-powered webserver to expose oauth and webhook endpoints
